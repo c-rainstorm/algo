@@ -24,4 +24,10 @@ public class Demo_2_1_aabb {
         }
     }
 
+    public static void main(String[] args) {
+        int m = 1;
+        float n = m;
+        System.out.println("int: " + Integer.toBinaryString(m));
+        System.out.println("float: " + Integer.toBinaryString(Float.floatToIntBits(n)));
+    }
 }
