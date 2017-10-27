@@ -2,7 +2,9 @@ package me.rainstorm.chp3;
 
 import org.junit.Test;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * 题目描述：
@@ -29,11 +31,24 @@ public class Pra_3_2_MolarMass {
         System.out.printf("%.3f\n", basic("C12H22O11"));
     }
 
+    @Test
+    public void test4() {
+        System.out.printf("%.3f\n", basic("CHO"));
+    }
+
+    @Test
+    public void test5() {
+        System.out.printf("%.3f\n", basic("C2H2O2"));
+    }
+
+    @Test
+    public void test6() {
+        System.out.printf("%.3f\n", basic("C22H22O22N22"));
+    }
+
     /**
-     *
-     *  时间复杂度：O(n)
-     *  空间复杂度：O(1)
-     *
+     * 时间复杂度：O(n)
+     * 空间复杂度：O(1)
      */
     private double basic(String molecule) {
         int numC = 0;
@@ -68,7 +83,7 @@ public class Pra_3_2_MolarMass {
             return 1;
         }
         int num = molecule.charAt(i + 1) - '0';
-        if (Character.isDigit(molecule.charAt(i + 2))) {
+        if (i + 2 < molecule.length() && Character.isDigit(molecule.charAt(i + 2))) {
             num *= 10;
             num += molecule.charAt(i + 2) - '0';
         }
@@ -76,12 +91,12 @@ public class Pra_3_2_MolarMass {
     }
 
 
-    public static void main(String[] args) {
-        Scanner cin = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        BufferedReader cin = new BufferedReader(new InputStreamReader(System.in));
         Pra_3_2_MolarMass molarMass = new Pra_3_2_MolarMass();
-        int n = cin.nextInt();
+        int n = Integer.parseInt(cin.readLine().trim());
         for (int i = 0; i < n; ++i) {
-            System.out.printf("%.3f\n", molarMass.basic(cin.next()));
+            System.out.printf("%.3f\n", molarMass.basic(cin.readLine().trim()));
         }
     }
 
