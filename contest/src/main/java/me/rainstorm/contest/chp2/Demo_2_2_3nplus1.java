@@ -1,4 +1,4 @@
-package me.rainstorm.chp2;
+package me.rainstorm.contest.chp2;
 
 // 对于任意大于 1 的自然数 n, 若 n 为奇数，则将 n 变为 3n+1，否则将其变为原来的一半
 // 经过若干次变换，一定会使 n 变为 1，

@@ -1,4 +1,4 @@
-package me.rainstorm.chp3;
+package me.rainstorm.contest.chp3;
 
 import org.junit.Test;
 
