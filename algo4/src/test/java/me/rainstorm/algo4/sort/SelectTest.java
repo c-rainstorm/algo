@@ -1,9 +1,8 @@
 package me.rainstorm.algo4.sort;
 
-import me.rainstorm.algo4.tools.FileIn;
-import org.junit.jupiter.api.Test;
-
-import java.nio.file.Paths;
+import me.rainstorm.algo4.sort.converter.IntegerElementConverter;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
 
 /**
  * @author baochen1.zhang
@@ -11,27 +10,15 @@ import java.nio.file.Paths;
  */
 public class SelectTest {
 
-    @Test
-    public void Ints8() throws Exception {
-        try (FileIn fileIn = new FileIn(Paths.get("data/8ints.txt").toFile())) {
-            Integer[] ints = fileIn.readAllInts();
-            Sort<Integer> selection = new Selection<>();
+    @RepeatedTest(5)
+    @ParameterizedTest
+    @TxtFileSource(resources = {"data/1Kints.txt", "data/8ints.txt"},
+            elementConverter = IntegerElementConverter.class)
+    public void Selection(Integer[] ints) {
+        Sort<Integer> selection = new Selection<>();
 
-            selection.sort(ints, selection::less);
-            assert selection.isSorted(ints, selection::less);
-            selection.print(ints);
-        }
-    }
-
-    @Test
-    public void Ints1K() throws Exception {
-        try (FileIn fileIn = new FileIn(Paths.get("data/1Kints.txt").toFile())) {
-            Integer[] ints = fileIn.readAllInts();
-            Sort<Integer> selection = new Selection<>();
-
-            selection.sort(ints, selection::less);
-            assert selection.isSorted(ints, selection::less);
-            selection.print(ints);
-        }
+        selection.sort(ints, selection::less);
+        assert selection.isSorted(ints, selection::less);
+        selection.print(ints);
     }
 }
