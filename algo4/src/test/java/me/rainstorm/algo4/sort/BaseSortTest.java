@@ -12,6 +12,8 @@ import java.util.function.Supplier;
  * @date 2020.01.08
  */
 public class BaseSortTest<Type extends Comparable<Type>> {
+    protected int TIMEOUT = 10;
+
     public static enum SortType {
         ASC, DESC
     }
@@ -20,6 +22,11 @@ public class BaseSortTest<Type extends Comparable<Type>> {
 
     public BaseSortTest(Supplier<Sort<Type>> sortSupplier) {
         SortSupplier = sortSupplier;
+    }
+
+    public BaseSortTest(Supplier<Sort<Type>> sortSupplier, int timeout) {
+        SortSupplier = sortSupplier;
+        TIMEOUT = timeout;
     }
 
     protected <T> T read(String file, Function<FileIn, T> function) throws Exception {

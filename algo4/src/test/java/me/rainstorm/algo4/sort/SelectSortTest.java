@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import static java.time.Duration.ofSeconds;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
 /**
  * @author baochen1.zhang
  * @date 2020.01.06
@@ -50,6 +53,6 @@ public class SelectSortTest extends BaseIntegerSortTest {
     @Order(6)
     @RepeatedTest(REPEATED_TIME)
     public void ints1MTest() throws Exception {
-        sort(ints1M());
+        assertTimeoutPreemptively(ofSeconds(TIMEOUT), () -> sort(ints1M()));
     }
 }

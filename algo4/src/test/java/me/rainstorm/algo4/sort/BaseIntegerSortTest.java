@@ -14,6 +14,10 @@ public class BaseIntegerSortTest extends BaseSortTest<Integer> {
         super(sortSupplier);
     }
 
+    public BaseIntegerSortTest(Supplier<Sort<Integer>> sortSupplier, int timeout) {
+        super(sortSupplier, timeout);
+    }
+
     protected Integer[] ints1K() throws Exception {
         return read("data/1Kints.txt");
     }
