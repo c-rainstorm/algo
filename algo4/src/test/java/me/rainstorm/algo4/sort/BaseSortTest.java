@@ -12,6 +12,13 @@ import java.util.function.Supplier;
  * @date 2020.01.08
  */
 public class BaseSortTest<Type extends Comparable<Type>> {
+    //    protected final int REPEATED_TIME = Runtime.getRuntime().availableProcessors();
+    protected final int REPEATED_TIME = 1;
+
+    static {
+        System.err.println("availableProcessors: " + Runtime.getRuntime().availableProcessors());
+    }
+
     protected int TIMEOUT = 10;
 
     public static enum SortType {

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import static java.time.Duration.ofSeconds;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -12,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
  * @author baochen1.zhang
  * @date 2020.01.06
  */
+@Execution(ExecutionMode.CONCURRENT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SelectSortTest extends BaseIntegerSortTest {
-    protected final int REPEATED_TIME = 10;
 
     public SelectSortTest() {
         super(Selection::new);
@@ -44,6 +46,7 @@ public class SelectSortTest extends BaseIntegerSortTest {
         sort(ints8K());
     }
 
+    //    @Execution(ExecutionMode.CONCURRENT)
     @Order(5)
     @RepeatedTest(REPEATED_TIME)
     public void ints32KTest() throws Exception {
