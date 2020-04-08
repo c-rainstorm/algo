@@ -21,6 +21,11 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> extends AbstractSe
         return old;
     }
 
+    @Override
+    public Value delete(Key key) {
+        return null;
+    }
+
     private Value doPut(RBTreeNode<Key, Value> node) {
         if (root.isNil()) {
             root = node;

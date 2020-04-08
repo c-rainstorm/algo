@@ -27,8 +27,9 @@ public interface SearchTree<Key extends Comparable<Key>, Value> {
      * 从树中删除指定的 key
      *
      * @param key key
+     * @return Value - 旧值
      */
-    void delete(Key key);
+    Value delete(Key key);
 
     /**
      * 判断树中是否含有指定的 key

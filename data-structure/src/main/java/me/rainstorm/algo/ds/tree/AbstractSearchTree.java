@@ -17,11 +17,6 @@ public abstract class AbstractSearchTree<Key extends Comparable<Key>, Value>
     }
 
     @Override
-    public void delete(Key key) {
-
-    }
-
-    @Override
     public boolean contains(Key key) {
         return false;
     }
