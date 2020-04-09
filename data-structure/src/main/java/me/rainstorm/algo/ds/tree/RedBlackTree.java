@@ -21,11 +21,6 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> extends AbstractSe
         return old;
     }
 
-    @Override
-    public Value delete(Key key) {
-        return null;
-    }
-
     private Value doPut(RBTreeNode<Key, Value> node) {
         if (root.isNil()) {
             root = node;
@@ -78,37 +73,200 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> extends AbstractSe
                 if (node.onRight()) {
                     // 左右
                     node = node.parent;
-                    node.leftRotate();
+                    leftRotate(node);
                 }
 
                 // 左左
                 // node 为最下面的一个节点
                 node.parent.color = RBTreeNode.Color.BLACK;
                 node.parent.parent.color = RBTreeNode.Color.RED;
-                node.parent.parent.rightRotate();
+                rightRotate(node.parent.parent);
             } else {
                 if (node.onLeft()) {
                     // 右左
                     node = node.parent;
-                    node.rightRotate();
+                    rightRotate(node);
                 }
 
                 // 右右
                 // node 为最下面的一个节点
                 node.parent.color = RBTreeNode.Color.BLACK;
                 node.parent.parent.color = RBTreeNode.Color.RED;
-                node.parent.parent.leftRotate();
+                leftRotate(node.parent.parent);
             }
         }
 
-        while (!node.parent.isNil()) {
-            node = node.parent;
+        // 重置根节点为黑色
+        root.toBlack();
+    }
+
+    @Override
+    public Value delete(Key key) {
+        RBTreeNode<Key, Value> deleted = findNode(key);
+        if (deleted == null) {
+            // 节点未查到
+            return null;
         }
 
-        root = node;
-        // 重置根节点为黑色
-        root.setColor(RBTreeNode.Color.BLACK);
+        boolean needFix = deleted.isBlack();
+        RBTreeNode<Key, Value> focus;
+        if (deleted.left.isNil()) {
+            focus = deleted.right;
+            replace(deleted, deleted.right);
+        } else if (deleted.right.isNil()) {
+            focus = deleted.left;
+            replace(deleted, deleted.left);
+        } else {
+            RBTreeNode<Key, Value> minOnRight = min(deleted.right);
+
+            needFix = minOnRight.isBlack();
+            focus = minOnRight.right;
+            if (minOnRight != deleted.right) {
+                replace(minOnRight, minOnRight.right);
+                minOnRight.setRight(deleted.right);
+            } else {
+                // 解决 focus 为 NIL 的情况
+                focus.parent = minOnRight;
+            }
+            replace(deleted, minOnRight);
+            minOnRight.setLeft(deleted.left);
+            minOnRight.color = deleted.color;
+        }
+
+        if (needFix) {
+            deleteFix(focus);
+        }
+
+        size--;
+        return deleted.value;
     }
+
+    private RBTreeNode<Key, Value> findNode(Key key) {
+        RBTreeNode<Key, Value> current = root;
+        while (!current.isNil()) {
+            int cmp = current.key.compareTo(key);
+            boolean found = cmp == 0;
+            boolean onLeftSubTree = cmp > 0;
+
+            if (found) {
+                return current;
+            }
+
+            current = onLeftSubTree ? current.left : current.right;
+        }
+        return null;
+    }
+
+    private void replace(RBTreeNode<Key, Value> deleted, RBTreeNode<Key, Value> replace) {
+        if (deleted.parent.isNil()) {
+            root = replace;
+            replace.parent = RBTreeNode.NIL;
+        } else if (deleted.onLeft()) {
+            deleted.parent.setLeft(replace);
+        } else {
+            deleted.parent.setRight(replace);
+        }
+    }
+
+    private void deleteFix(RBTreeNode<Key, Value> focus) {
+        // 将额外黑色上移至 root，已使黑高不再影响
+        while (focus != root && focus.isBlack()) {
+            RBTreeNode<Key, Value> focusParent = focus.parent;
+            if (focus.onLeft()) {
+                RBTreeNode<Key, Value> brother = focusParent.right;
+                if (brother.isRed()) {
+                    // 把兄弟节点搞成黑色
+                    brother.toBlack();
+                    focusParent.toRed();
+                    leftRotate(focusParent);
+                    brother = focusParent.right;
+                }
+
+                if (brother.left.isBlack() && brother.right.isBlack()) {
+                    // 兄弟节点三黑，上提关注节点
+                    brother.toRed();
+                    focus = focusParent;
+                    continue;
+                }
+
+                if (brother.right.isBlack()) {
+                    // 左红右黑
+                    brother.left.toBlack();
+                    brother.toRed();
+                    rightRotate(brother);
+                    brother = focusParent.right;
+                }
+                brother.color = focusParent.color;
+                focusParent.toBlack();
+                brother.right.toBlack();
+                leftRotate(focusParent);
+            } else {
+                RBTreeNode<Key, Value> brother = focusParent.left;
+                if (brother.isRed()) {
+                    // 把兄弟节点搞成黑色
+                    brother.toBlack();
+                    focusParent.toRed();
+                    rightRotate(focusParent);
+                    brother = focusParent.left;
+                }
+
+                if (brother.left.isBlack() && brother.right.isBlack()) {
+                    // 兄弟节点三黑，上提关注节点
+                    brother.toRed();
+                    focus = focusParent;
+                    continue;
+                }
+
+                if (brother.left.isBlack()) {
+                    // 左红右黑
+                    brother.right.toBlack();
+                    brother.toRed();
+                    leftRotate(brother);
+                    brother = focusParent.left;
+                }
+                brother.color = focusParent.color;
+                focusParent.toBlack();
+                brother.left.toBlack();
+                rightRotate(focusParent);
+            }
+
+            break;
+        }
+
+        focus.toBlack();
+    }
+
+    private void leftRotate(RBTreeNode<Key, Value> node) {
+        RBTreeNode<Key, Value> newRoot = node.getNewRoot(node.right);
+        node.setRight(newRoot.left);
+        newRoot.setLeft(node);
+        if (node == root) {
+            root = newRoot;
+        }
+    }
+
+    public void rightRotate(RBTreeNode<Key, Value> node) {
+        RBTreeNode<Key, Value> newRoot = node.getNewRoot(node.left);
+        node.setLeft(newRoot.right);
+        newRoot.setRight(node);
+        if (node == root) {
+            root = newRoot;
+        }
+    }
+
+    private RBTreeNode<Key, Value> min(RBTreeNode<Key, Value> currentRoot) {
+        while (!currentRoot.left.isNil()) {
+            currentRoot = currentRoot.left;
+        }
+        return currentRoot;
+    }
+
+//    private RBTreeNode<Key, Value> max(RBTreeNode<Key, Value> currentRoot) {
+//        while (!currentRoot.right.isNil()) {
+//            currentRoot = currentRoot.right;
+//        }
+//        return currentRoot;
+//    }
 
     @SuppressWarnings({"rawtypes"})
     @Data
@@ -184,12 +342,20 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> extends AbstractSe
             return Color.RED.equals(color);
         }
 
+        public boolean isBlack() {
+            return Color.BLACK.equals(color);
+        }
+
         public boolean onLeft() {
             return parent.left == this;
         }
 
         public boolean onRight() {
             return parent.right == this;
+        }
+
+        public void toRed() {
+            this.color = Color.RED;
         }
 
         public void toBlack() {
@@ -205,24 +371,10 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> extends AbstractSe
 
         public RBTreeNode<Key, Value> uncle() {
             if (parent.onLeft()) {
-                // 父节点在左子树
                 return parent.parent.right;
             } else {
-                // 父节点在右子树
                 return parent.parent.left;
             }
-        }
-
-        public void rightRotate() {
-            RBTreeNode<Key, Value> newRoot = this.getNewRoot(this.left);
-            setLeft(newRoot.right);
-            newRoot.setRight(this);
-        }
-
-        public void leftRotate() {
-            RBTreeNode<Key, Value> newRoot = this.getNewRoot(this.right);
-            setRight(newRoot.left);
-            newRoot.setLeft(this);
         }
 
         private RBTreeNode<Key, Value> getNewRoot(RBTreeNode<Key, Value> newRoot) {

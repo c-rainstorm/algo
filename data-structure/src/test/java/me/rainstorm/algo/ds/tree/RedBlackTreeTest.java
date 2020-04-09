@@ -1,8 +1,10 @@
 package me.rainstorm.algo.ds.tree;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -16,13 +18,14 @@ public class RedBlackTreeTest {
 
     private static Stream<int[]> RedBlackTreeTestCaseSource() {
         return Stream.of(
+                new int[]{43, 68, 47, 98, 89, 40, 72, 14, 3, 48},
                 new int[]{1, 2, 3},
                 new int[]{11, 2, 14, 1, 7, 15, 5, 8, 4},
                 IntStream.range(1, 100).toArray(),
                 IntStream.range(1, 100).boxed().sorted(Collections.reverseOrder())
                         .mapToInt(value -> value)
                         .toArray(),
-                IntStream.generate(() -> ThreadLocalRandom.current().nextInt(100000)).limit(1000).toArray()
+                IntStream.generate(() -> ThreadLocalRandom.current().nextInt(10000)).distinct().limit(1000).toArray()
         );
     }
 
@@ -34,6 +37,24 @@ public class RedBlackTreeTest {
             redBlackTree.put(element, element);
             System.out.println(element);
             validRedBlackTree(redBlackTree);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("RedBlackTreeTestCaseSource")
+    public void deleteTest(int[] elements) {
+        System.out.println(Arrays.toString(elements));
+        RedBlackTree<Integer, Integer> searchTree = new RedBlackTree<>();
+        for (int element : elements) {
+            searchTree.put(element, element);
+            validRedBlackTree(searchTree);
+        }
+
+        for (int element : elements) {
+            System.out.println(element);
+            Integer val = searchTree.delete(element);
+            Assertions.assertEquals(element, val);
+            validRedBlackTree(searchTree);
         }
     }
 
